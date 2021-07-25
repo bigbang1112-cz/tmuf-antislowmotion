@@ -120,16 +120,17 @@ namespace BigBang1112.TmufAntiSlowMotionLib
                 {
                     var curRecsCount = curRecs.Count();
 
-                    if (prevRecsCount > curRecsCount)
-                    {
-                        var differentRecs = prevRecs.Except(curRecs);
+                    var differentRecs = prevRecs.Except(curRecs);
 
-                        affected.Add(login.Login, AssignAffectedLogin(before, after, maps, differentRecs, login));
-                    }
+                    var affectedLogin = AssignAffectedLogin(before, after, maps, differentRecs, login);
+                    if (affectedLogin is not null)
+                        affected.Add(login.Login, affectedLogin);
                 }
                 else
                 {
-                    affected.Add(login.Login, AssignAffectedLogin(before, after, maps, prevRecs, login));
+                    var affectedLogin = AssignAffectedLogin(before, after, maps, prevRecs, login);
+                    if (affectedLogin is not null)
+                        affected.Add(login.Login, affectedLogin);
                 }
             }
 
@@ -253,6 +254,9 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             IEnumerable<CampaignScoresMap> differentRecs, LoginInfo login)
         {
             var mapUidList = new List<string>();
+
+            if (differentRecs.Count() <= 0)
+                return null;
 
             foreach (var map in differentRecs)
             {
