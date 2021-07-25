@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 
+    <meta content="@ViewData["Title"]" property="og:title" />
+    <meta content="Report by BigBang1112" property="og:description" />
+    <meta content="@string.Format("{0}://{1}{2}{3}", Context.Request.Scheme, Context.Request.Host, Context.Request.Path, Context.Request.QueryString)" property="og:url" />
+    <meta content="https://antislowmo.bigbang1112.cz/img/embed.jpg" property="og:image" />
+    <meta content="#FFFFFF" data-react-helmet="true" name="theme-color" />
+
     <link rel="apple-touch-icon" sizes="180x180" href="~/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon/favicon-16x16.png">
@@ -33,6 +39,7 @@
                         </li>
                     </ul>
                 </div>
+                A report by BigBang1112
             </div>
         </nav>
     </header>
