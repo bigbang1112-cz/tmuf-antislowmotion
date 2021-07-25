@@ -8,7 +8,8 @@ namespace BigBang1112.TmufAntiSlowMotion.Data.Models
 {
     public class VoluntaryModel
     {
-        [JsonPropertyName("image")]
-        public string Image { get; set; }
+        public string CustomMessage { get; set; }
+        public string CustomTooltip { get; set; }
+        public string Url { get; set; }
     }
 }

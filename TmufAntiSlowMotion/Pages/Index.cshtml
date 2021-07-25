@@ -171,7 +171,7 @@
                 @if (Model.Voluntary.TryGetValue(login.Key, out VoluntaryModel voluntary))
                 {
                 <br />
-                <span title="The user requested Nadeo to remove these records."><small><i><a href="@voluntary.Image">(records removed voluntarily)</a></i></small></span>
+                <span title="@voluntary.CustomTooltip"><small><i><a href="@voluntary.Url">(@voluntary.CustomMessage)</a></i></small></span>
                 }
             </td>
 
