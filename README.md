@@ -1,4 +1,4 @@
-# July 23, 2021 - The Anti-Slowmotion day of TMUF
+# July 23, 2021 - The Anti-Slowmotion day for TMUF
 
 This is the official repository for the Anti-Slowmotion day website.
 
