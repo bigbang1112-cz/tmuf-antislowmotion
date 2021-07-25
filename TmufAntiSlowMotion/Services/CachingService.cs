@@ -1,4 +1,5 @@
 ﻿using BigBang1112.TmufAntiSlowMotion.Data;
+using BigBang1112.TmufAntiSlowMotion.Data.Models;
 using BigBang1112.TmufAntiSlowMotionLib;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
@@ -99,6 +100,12 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
             {
                 logger.LogInformation("Parsing maps.json ...");
                 return JsonSerializer.Deserialize<Dictionary<string, MapInfo>>(File.ReadAllText("wwwroot/maps.json"));
+            });
+
+            cache.GetOrCreate(CacheKeys.Voluntary, entry =>
+            {
+                logger.LogInformation("Parsing voluntary.json ...");
+                return JsonSerializer.Deserialize<Dictionary<string, VoluntaryModel>>(File.ReadAllText("wwwroot/voluntary.json"));
             });
 
             return Task.CompletedTask;

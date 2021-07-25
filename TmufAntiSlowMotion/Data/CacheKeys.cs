@@ -19,5 +19,6 @@ namespace BigBang1112.TmufAntiSlowMotion.Data
         public const string Leaderboard2008 = "LB2008";
         public const string ReportJson = "ReportJson";
         public const string MapInfos = "MapInfos";
+        public const string Voluntary = "Voluntary";
     }
 }

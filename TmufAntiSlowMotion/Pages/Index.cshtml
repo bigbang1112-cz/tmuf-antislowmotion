@@ -165,7 +165,14 @@
             <td title="@login.Key" class="align-middle" style="width: 16rem">
                 <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
 
+
                 <span>@login.Value.Changes.Count+ removed @(login.Value.Changes.Count > 1 ? " records" : "record")</span>
+                
+                @if (Model.Voluntary.TryGetValue(login.Key, out VoluntaryModel voluntary))
+                {
+                <br />
+                <span title="The user requested Nadeo to remove these records."><small><i><a href="@voluntary.Image">(records removed voluntarily)</a></i></small></span>
+                }
             </td>
 
             @{

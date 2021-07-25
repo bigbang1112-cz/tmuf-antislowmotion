@@ -1,4 +1,5 @@
 ﻿using BigBang1112.TmufAntiSlowMotion.Data;
+using BigBang1112.TmufAntiSlowMotion.Data.Models;
 using BigBang1112.TmufAntiSlowMotionLib;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,6 +25,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Pages
         public int RecordsRemoved { get; set; }
         public Dictionary<string, Map> UnaffectedMaps { get; set; }
         public int OfficialMapCount { get; set; }
+        public Dictionary<string, VoluntaryModel> Voluntary { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IMemoryCache cache)
         {
@@ -44,6 +46,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Pages
             RecordsRemoved = Math.Abs(cache.Get<int>(CacheKeys.RecordCountDifference));
             UnaffectedMaps = cache.Get<Dictionary<string, Map>>(CacheKeys.UnaffectedMaps);
             OfficialMapCount = cache.Get<int>(CacheKeys.OfficialMapCount);
+            Voluntary = cache.Get<Dictionary<string, VoluntaryModel>>(CacheKeys.Voluntary);
 
             return Page();
         }
