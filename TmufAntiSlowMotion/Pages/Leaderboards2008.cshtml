@@ -8,13 +8,20 @@
 
 <p>Very old leaderboards. Raw data used to generate this page <a href="~/leaderboards/2008.zip">can be downloaded here</a>.</p>
 
+<ul>
+    @foreach (var campaign in Model.Leaderboards)
+    {
+        <li><a href="#@campaign.Key">@campaign.Key</a></li>
+    }
+</ul>
+
 @{
     var counter = 0;
 }
 
 @foreach (var campaign in Model.Leaderboards)
 {
-    <h3>@campaign.Key</h3>
+    <h3 id="@campaign.Key">@campaign.Key</h3>
 
     var url = string.Format("http://scores.trackmaniaforever.com/scores7/{0}/{0}5.gz", campaign.Key[0..^3]);
 
