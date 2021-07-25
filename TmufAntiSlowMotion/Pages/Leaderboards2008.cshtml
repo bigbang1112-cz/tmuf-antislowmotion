@@ -1,0 +1,99 @@
+﻿@page
+@model BigBang1112.TmufAntiSlowMotion.Pages.Leaderboards2008Model
+@{
+    ViewData["Title"] = "Leaderboards from " + new DateTime(2008, 4, 12).ToShortDateString();
+}
+
+<h1>Leaderboards from @(new DateTime(2008, 4, 12).ToShortDateString())</h1>
+
+<p>Very old leaderboards. Raw data used to generate this page <a href="~/leaderboards/2008.zip">can be downloaded here</a>.</p>
+
+@{
+    var counter = 0;
+}
+
+@foreach (var campaign in Model.Leaderboards)
+{
+    <h3>@campaign.Key</h3>
+
+    var url = string.Format("http://scores.trackmaniaforever.com/scores7/{0}/{0}5.gz", campaign.Key[0..^3]);
+
+    <p>Raw data download: <a href="@url">@url</a></p>
+
+    foreach (var map in campaign.Value.Maps)
+    {
+        counter++;
+        var mapZone = map.Value.Zones["World"];
+        var records = mapZone.Records;
+
+        <table class="table">
+            <thead class="thead-dark pb-0">
+                <tr data-toggle="collapse" data-target="#leaderboard-@(counter)" class="accordion-toggle" style="cursor: pointer">
+                    <th colspan="3">@Model.MapInfos[map.Key].Name (@mapZone.TotalCount records)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="hiddenRow p-0">
+                        <div class="accordian-body collapse" id="leaderboard-@(counter)">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Time</th>
+                                        <th>Nickname</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var record in records)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @record.Rank
+                                            </td>
+                                            <td>
+                                                @if (campaign.Key == "UnitedPlatform.gz" || campaign.Key == "UnitedStunts.gz")
+                                                {
+                                                    var score = record.Time.GetValueOrDefault().TotalMilliseconds;
+                                                    if (score < 0)
+                                                    {
+                                                        <span>-</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @score
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (record.Time.HasValue)
+                                                    {
+                                                        if (record.Time.Value < TimeSpan.Zero)
+                                                        {
+                                                            <span>-:--.--</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @record.Time.Value.ToStringTm(true)
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @record.Time.ToStringTm(true)
+                                                    }
+                                                }
+                                            </td>
+                                            <td title="@record.Login">
+                                                @Formatter.Deformat(record.Nickname)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+}

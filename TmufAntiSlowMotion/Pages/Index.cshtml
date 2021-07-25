@@ -1,0 +1,290 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "July 23, 2021 - The Anti-Slowmotion day of TMUF";
+}
+
+<h1>July 23, 2021 - The Anti-Slowmotion day of TMUF</h1>
+
+<p>
+    On 23 July, a major change could be seen in the Trackmania United Forever leaderboards.
+    Over 5 thousand records were removed after an anti-cheat wave by Nadeo. The records were removed
+    during 22 July, but they have been publically updated on the next day. It was possible to extract
+    the leaderboard data from 23rd and the day before using some simple reverse engineering techniques.
+</p>
+
+<ul>
+    <li><a href="#disclaimer">Disclaimer</a></li>
+    <li>
+        <a href="#transparency">Transparency</a>
+        <ul>
+            <li><a href="#libraries-used">Libraries used</a></li>
+            <li><a href="#full-source-code">Full source code</a></li>
+        </ul>
+    </li>
+    <li><a href="#records-removed">@(Model.RecordsRemoved.ToString("# ###"))+ records have been removed</a></li>
+    <li><a href="#data-accuracy">Data accuracy in the next results</a></li>
+    <li><a href="#logins-with-removed-records">Logins with removed records within Top 10 world</a></li>
+    <li><a href="#maps-with-most-removed-records">Maps with the most removed records within Top 10 world</a></li>
+    <li><a href="#unaffected-maps-within">Unaffected maps within Top 10 world</a></li>
+    <li><a href="#data-accuracy-reminder">Data accuracy reminder</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+<h2 id="disclaimer">Disclaimer</h2>
+
+<p>
+    The point of this report is to share changes that have happened to the leaderboards, not to call out people as cheaters.
+    I'm not the one to judge that someone is cheating. Please, do not witchhunt the nicknames mentioned.
+</p>
+
+<h2 id="transparency">Transparency</h2>
+
+<p>
+    I used <a href="https://www.telerik.com/download/fiddler">Fiddler 4</a> to look through the HTTP requests the game does to get the leaderboard data. The game
+    communicates with the server by using the <a href="https://en.wikipedia.org/wiki/XML-RPC">XML-RPC protocol</a>. Basically, the client sends some conventional XML
+    to server and the server returns some conventional XML back. The request name for the leaderboard data is
+    <code>GetCampaignScores</code>. Once proper arguments are assigned, this will then return the URL of
+    the downloadable leaderboard data. The format of the URL looks something like this <b>(must be http, not https)</b>:
+</p>
+
+<p><code>http://scores.trackmaniaforever.com/scores[number]/[campaign]/[campaign][zone].gz</code></p>
+
+<ul>
+    <li>
+        <b>[number]</b> - The ID of the score set. This number can be between 1 and 7:
+        <ul>
+            <li>
+                1-6: active sets that loop around and update.
+                That means you can access the leaderboards up to 5 days back, right now.
+                As an example, these are the last modified dates taken from 15 July:
+                <ul>
+                    <li>scores1 - @(new DateTime(2021, 7, 12).ToShortDateString())</li>
+                    <li>scores2 - @(new DateTime(2021, 7, 13).ToShortDateString())</li>
+                    <li>scores3 - @(new DateTime(2021, 7, 14).ToShortDateString())</li>
+                    <li>scores4 - @(new DateTime(2021, 7, 15).ToShortDateString())</li>
+                    <li>scores5 - @(new DateTime(2021, 7, 10).ToShortDateString())</li>
+                    <li>scores6 - @(new DateTime(2021, 7, 11).ToShortDateString())</li>
+                </ul>
+            </li>
+            <li>
+                scores7: <i>Special case!</i> This is an inactive set of records from @(new DateTime(2008, 4, 12).ToShortDateString()).
+                <a asp-page="Leaderboards2008">Check how the leaderboards looked back then!</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <b>[campaign]</b> - The official name of the campaign without spaces. Possible ones are:
+        <ul>
+            <li>UnitedRace</li>
+            <li>UnitedPuzzle</li>
+            <li>UnitedPlatform</li>
+            <li>UnitedStunts</li>
+            <li>Nations</li>
+            <li>ManiaStar <i>(StarTrack)</i></li>
+            <li>Unassigned <i>(not available)</i></li>
+            <li>CustomRace <i>(not available)</i></li>
+            <li>CustomPuzzle <i>(not available)</i></li>
+            <li>CustomPlatform <i>(not available)</i></li>
+            <li>CustomStunts <i>(not available)</i></li>
+        </ul>
+    </li>
+    <li>
+        <b>[zone]</b> - The zone ID to focus on. Based on this, you will always get the World leaderboard
+        + other leaderboards that lead to your zone. You can only use the <b>liveable</b> zone ID (the one you select in game).
+        The values are unpredictable, but <a href="~/zones.txt">I managed to export all of the IDs for each zone</a>.
+    </li>
+</ul>
+
+<p>
+    These URL endpoints are updated every day throughout the night in a loop I mentioned above. They start updating at 2:40 UTC from Japan
+    and stop updating at around 8:17 UTC in China.
+</p>
+
+<p>
+    The content of the leaderboards file is compressed with <a href="https://en.wikipedia.org/wiki/Gzip">gzip</a> and contains
+    binary data that can be read <a href="https://github.com/BigBang1112/tm-xml-rpc/blob/main/TmXmlRpc/CampaignScores.cs">like this</a>.
+    It contains all map UIDs of the campaign. For each map: Up to 4 or 5 leaderboards based on the zone ID, always including the World leaderboard.
+    For each zone leaderboard: Top 10 records with rank, time, login, and nickname. Then, a list of all times driven on the track <b>without login or nickname</b>
+    used to calculate the number of skillpoints. The leaderboard also contains the total amount of records as a single value.
+    <b>
+        Replay URLs aren't available in these leaderboards. They are protected by authentication and cost 5 coppers each.
+        <i>And my United account doesn't have that many coppers to just download everything.</i> Take that also into consideration
+        of the results below - no replay files were investigated.
+    </b> I also tried to extract the replay URL format, but the URL is unpredictable
+    and, just random (X are purely random numbers):
+</p>
+<p><code>http://data.trackmaniaforever.com/official_replays/records/X-XXXXX/X/XXXXXXX.replay.gbx</code></p>
+<p>
+    For the report, I used <a href="~/leaderboards/before.zip">before.zip</a> (from July 22) and <a href="~/leaderboards/after.zip">after.zip</a>
+    (from July 23), containing all of the official campaign GZ files, therefore data taken
+    from July 22 and 23, available in <code>scores5</code> from July 22-27 and in <code>scores6</code> from July 23-28.
+    The 'before' leaderboards contain data from China, 浙江 ~8:13 UTC and the 'after' leaderboards contain data from Japan ~2:40 UTC
+    to have the smallest possible gap and increase the accuracy (practically it isn't anything different, see <a href="~/leaderboards/before_japan.zip">before_japan.zip</a>).
+    To assign map names to the map UIDs, a <a href="~/maps.json">maps.json</a> was pre-generated.
+</p>
+<p>
+    The website generates all of the data on the fly when started. Only the files mentioned above were used to generate the result.
+</p>
+
+<h5 id="libraries-used">Libraries used</h5>
+
+<ul>
+    <li>TmXmlRpc</li>
+    <li>GBX.NET</li>
+</ul>
+
+<h5 id="full-source-code">Full source code is available here.</h5>
+<br />
+<h2 id="records-removed"><b>@(Model.RecordsRemoved.ToString("# ###"))+ records</b> have been removed</h2>
+
+<p>
+    And on 100% it's way more. The amount of records is possibly over 6 thousand, because of the players driving official times at that day.
+    But this is the statistical result of calculating the total record count of all campaigns on July 23, subtracted from the result of July 22.
+</p>
+
+<h2 id="data-accuracy">Data accuracy in the next results</h2>
+
+<p>
+    The following results were calculated by <b>only using the top 10 world leaderboards</b>. It is the best suitable leaderboard
+    zone for this report because it affects everyone who hunted the world records. I have extracted all of the other zones
+    for future investigations, but these haven't been counted for now.
+</p>
+
+<h2 id="logins-with-removed-records">Logins with removed records within Top 10 world <small><a href="#maps-with-most-removed-records">skip</a></small></h2>
+
+<p>There are some expected and unexpected results. <b>You can click on the maps to get the leaderboards before and after.</b> <a asp-page="Index" asp-route-format="json">JSON</a></p>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Removed from maps</th>
+            <th>Before</th>
+            <th>After</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var login in Model.Report.AffectedLogins.OrderByDescending(x => x.Value.Changes.Count))
+        {
+        <tr class="tr-map-leaderboard" data-login="@login.Key">
+            <td title="@login.Key" class="align-middle" style="width: 16rem">
+                <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
+
+                <span>@login.Value.Changes.Count+ removed @(login.Value.Changes.Count > 1 ? " records" : "record")</span>
+            </td>
+
+            @{
+                    var changes = Model.Report.GetChanges(login.Key);
+            }
+
+            <td style="width: 12rem;">
+                <div style="height: 13rem;" class="overflow-auto">
+                    @if (changes.Count > 0)
+                        {
+                    <ul class="list-unstyled">
+                        @foreach (var change in changes)
+                                {
+                        <li><button type="button" class="button-map-leaderboard btn btn-link btn-sm" data-mapuid="@change.Key" title="@change.Key">@change.Value.MapName</button></li>
+                                }
+                    </ul>
+                        }
+                </div>
+            </td>
+            <td style="max-width: 5rem;" class="td-map-leaderboard-before align-middle">
+            </td>
+            <td style="max-width: 5rem;" class="td-map-leaderboard-after align-middle">
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<h2 id="maps-with-most-removed-records">Maps with the most removed records within Top 10 world <small><a href="#unaffected-maps-within">skip</a></small></h2>
+
+<p>Calculated by taking the affected maps and then checking every login if they had a change on this map.</p>
+
+<table id="table-maps-with-most-removed-records" class="table">
+    <thead>
+        <tr>
+            <th>Map</th>
+            <th>Count</th>
+            <th>Removed records by</th>
+            <th>Before</th>
+            <th>After</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var map in Model.MostAffectedMaps.Where(x => x.Value.Count > 0).OrderByDescending(x => x.Value.Count))
+        {
+        <tr class="tr-map" data-mapuid="@map.Key" data-logins="@string.Join(",,,", map.Value.Select(x => x.Login))">
+            <td class="align-middle" style="width: 1rem">
+                <h4>@Model.Report.Maps[map.Key].MapName</h4>
+                <span class="text-secondary" style="font-size:12px">@map.Key</span>
+            </td>
+
+            <td class="align-middle">
+                <h2>@map.Value.Count</h2>
+            </td>
+
+            <td>
+                <ul class="list-unstyled align-middle">
+                    @foreach (var login in map.Value)
+                        {
+                    <li title="@login.Login">@Formatter.Deformat(login.Nickname)</li>
+                        }
+                </ul>
+            </td>
+            <td style="min-width: 12rem;" class="td-map-leaderboard-before align-middle text-center">
+                <button type="button" class="button-map-leaderboard-before btn btn-link btn-sm">Load</button>
+            </td>
+            <td style="min-width: 12rem;" class="td-map-leaderboard-after align-middle text-center">
+                <button type="button" class="button-map-leaderboard-after btn btn-link btn-sm">Load</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<h2 id="unaffected-maps-within">Unaffected maps within Top 10 world <small><a href="#data-accuracy-reminder">skip</a></small></h2>
+
+<p>Calculated by taking all official maps and substracting the list of affected maps.</p>
+
+<h4>
+    <b>@Model.UnaffectedMaps.Count/@Model.OfficialMapCount (@((Model.UnaffectedMaps.Count/(float)Model.OfficialMapCount).ToString("P")))</b>
+    top 10 world leaderboards have <b>not</b> been affected.
+</h4>
+
+<ul>
+    @foreach (var map in Model.UnaffectedMaps)
+    {
+    <li>@map.Value.MapName <small class="text-secondary">@map.Key</small></li>
+    }
+</ul>
+
+<h2 id="data-accuracy-reminder">Data accuracy reminder</h2>
+
+<p>
+    The tables have been only measured from the Top 10 world leaderboards. All of these are only the minimal values
+    of the changes that have been done. I've also downloaded 1.6GB of leaderboard data of all available zones
+    from the two investigated days to be later analyzed.
+</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>
+    Nadeo developers and the master server itself know way more than we do. These statistics came from the data that
+    clients (we) receive. If Nadeo will say any details regarding the leaderboard cleanup may or may not be seen, but
+    as Hylis said on his Twitter:
+</p>
+
+<blockquote class="blockquote">
+    ...we will avoid to disclose more information as it is best for anticheat development.
+    <footer class="blockquote-footer"><a href="https://twitter.com/Hylis1/status/1414941040331698176?s=20">Hylis</a></footer>
+</blockquote>
+
+<h5>Thanks for reading.</h5>
+
+@section Scripts {
+    <script src="~/js/leaderboards.js"></script>
+}
