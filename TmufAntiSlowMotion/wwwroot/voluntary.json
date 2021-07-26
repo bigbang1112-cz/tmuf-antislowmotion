@@ -7,5 +7,14 @@
   "sankophys": {
     "CustomMessage": "claims false positive",
     "CustomTooltip": "This user claims this case is false positive, but the replay file is missing. If anyone has a replay of BayD4 0:35.49 by Mizu, message me on Discord: BigBang1112#9489"
+  },
+  "javiflyer": {
+    "CustomMessage": "claims false positive",
+    "CustomTooltip": "This user claims this case is false positive, but the replay file is missing. If anyone has a replay of StarStadiumC5 0:36.98 by JaviFlyer, message me on Discord: BigBang1112#9489"
+  },
+  "plastunio": {
+    "CustomMessage": "older replays driven by Techno",
+    "CustomTooltip": "This user claims that Techno drove some of his records back in the days.",
+    "Url": "https://cdn.discordapp.com/attachments/434795480547852288/868938948683112478/25cdde7f222a32068c55c7487aacdb01.png"
   }
 }
