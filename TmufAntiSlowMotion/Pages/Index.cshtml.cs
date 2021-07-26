@@ -46,7 +46,12 @@ namespace BigBang1112.TmufAntiSlowMotion.Pages
             RecordsRemoved = Math.Abs(cache.Get<int>(CacheKeys.RecordCountDifference));
             UnaffectedMaps = cache.Get<Dictionary<string, Map>>(CacheKeys.UnaffectedMaps);
             OfficialMapCount = cache.Get<int>(CacheKeys.OfficialMapCount);
-            Voluntary = cache.Get<Dictionary<string, VoluntaryModel>>(CacheKeys.Voluntary);
+
+            Voluntary = cache.GetOrCreate(CacheKeys.Voluntary, entry =>
+            {
+                entry.SetAbsoluteExpiration(DateTimeOffset.UtcNow + TimeSpan.FromMinutes(1));
+                return JsonSerializer.Deserialize<Dictionary<string, VoluntaryModel>>(System.IO.File.ReadAllText("wwwroot/voluntary.json")); ;
+            });
 
             return Page();
         }

@@ -102,12 +102,6 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
                 return JsonSerializer.Deserialize<Dictionary<string, MapInfo>>(File.ReadAllText("wwwroot/maps.json"));
             });
 
-            cache.GetOrCreate(CacheKeys.Voluntary, entry =>
-            {
-                logger.LogInformation("Parsing voluntary.json ...");
-                return JsonSerializer.Deserialize<Dictionary<string, VoluntaryModel>>(File.ReadAllText("wwwroot/voluntary.json"));
-            });
-
             return Task.CompletedTask;
         }
 
