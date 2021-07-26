@@ -39,7 +39,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Pages
 
             if (format == "json")
             {
-                return File(cache.Get<byte[]>(CacheKeys.ReportJson), "application/json", "report.json");
+                return Content(cache.Get<string>(CacheKeys.ReportJson), "application/json");
             }
 
             MostAffectedMaps = cache.Get<Dictionary<string, ICollection<LoginInfo>>>(CacheKeys.MostAffectedMaps);

@@ -93,7 +93,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
             cache.GetOrCreate(CacheKeys.ReportJson, entry =>
             {
                 logger.LogInformation("Serializing the report into JSON ...");
-                return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(report));
+                return JsonSerializer.Serialize(report);
             });
 
             cache.GetOrCreate(CacheKeys.MapInfos, entry =>
