@@ -32,7 +32,8 @@ namespace BigBang1112.TmufAntiSlowMotion.API
         {
             var report = cache.Get<Report>(CacheKeys.Report);
 
-            if (!report.Maps.TryGetValue(mapUid, out Map map))
+            if (!report.Maps.TryGetValue(mapUid, out Map map)
+             && !report.UnaffectedMaps.TryGetValue(mapUid, out map))
                 return NotFound();
 
             return Ok(map.PrevLb.Select(x => AdjustedRecord(x)));
@@ -43,7 +44,8 @@ namespace BigBang1112.TmufAntiSlowMotion.API
         {
             var report = cache.Get<Report>(CacheKeys.Report);
 
-            if (!report.Maps.TryGetValue(mapUid, out Map map))
+            if (!report.Maps.TryGetValue(mapUid, out Map map)
+             && !report.UnaffectedMaps.TryGetValue(mapUid, out map))
                 return NotFound();
 
             return Ok(map.CurLb.Select(x => AdjustedRecord(x)));
