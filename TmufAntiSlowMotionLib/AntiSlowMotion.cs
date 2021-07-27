@@ -139,11 +139,13 @@ namespace BigBang1112.TmufAntiSlowMotionLib
                 }
             }
 
-            foreach(var indifferentMap in affected.Values.SelectMany(x => x.Previous))
+            var unaffectedMaps = new Dictionary<string, Map>();
+
+            foreach (var indifferentMap in affected.Values.SelectMany(x => x.Previous))
             {
-                if (!maps.ContainsKey(indifferentMap))
+                if (!unaffectedMaps.ContainsKey(indifferentMap))
                 {
-                    maps.Add(indifferentMap, new Map
+                    unaffectedMaps.Add(indifferentMap, new Map
                     {
                         CurLb = GetMapRecord(before, indifferentMap),
                         PrevLb = GetMapRecord(after, indifferentMap)
@@ -152,11 +154,13 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             }
 
             ScanMapDetailsWithJsonFile(maps, mapsJsonFile);
+            ScanMapDetailsWithJsonFile(unaffectedMaps, mapsJsonFile);
 
             return new Report
             {
                 Maps = maps,
-                AffectedLogins = affected
+                AffectedLogins = affected,
+                UnaffectedMaps = unaffectedMaps
             };
         }
 

@@ -16,6 +16,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
         /// Key: login
         /// </summary>
         public Dictionary<string, AffectedLogin> AffectedLogins { get; set; }
+        public Dictionary<string, Map> UnaffectedMaps { get; set; }
 
         public Dictionary<string, Map> GetChanges(string login)
         {
@@ -55,6 +56,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             foreach (var mapUid in affected.Previous.Except(affected.Changes))
             {
                 Maps.TryGetValue(mapUid, out Map map);
+                UnaffectedMaps.TryGetValue(mapUid, out map);
                 dictionary.Add(mapUid, map);
             }
 
