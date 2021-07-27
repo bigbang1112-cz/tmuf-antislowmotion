@@ -55,6 +55,7 @@ namespace BigBang1112.TmufAntiSlowMotion.API
             {
                 Rank = record.Rank,
                 Time = TimeSpan.FromMilliseconds(record.Time).ToStringTm(true),
+                TimeRaw = record.Time,
                 Login = record.Login,
                 Nickname = Formatter.Deformat(record.Nickname)
             };
