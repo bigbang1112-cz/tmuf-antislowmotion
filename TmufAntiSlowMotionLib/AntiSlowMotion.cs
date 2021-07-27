@@ -116,21 +116,38 @@ namespace BigBang1112.TmufAntiSlowMotionLib
                 var prevRecs = prevRec.Value;
                 var prevRecsCount = prevRecs.Count();
 
+                AffectedLogin affectedLogin;
+
                 if (ownersAfter.TryGetValue(login, out IEnumerable<CampaignScoresMap> curRecs))
                 {
                     var curRecsCount = curRecs.Count();
 
                     var differentRecs = prevRecs.Except(curRecs);
 
-                    var affectedLogin = AssignAffectedLogin(before, after, maps, differentRecs, login);
-                    if (affectedLogin is not null)
-                        affected.Add(login.Login, affectedLogin);
+                    affectedLogin = AssignAffectedLogin(before, after, maps, differentRecs, login);
                 }
                 else
                 {
-                    var affectedLogin = AssignAffectedLogin(before, after, maps, prevRecs, login);
-                    if (affectedLogin is not null)
-                        affected.Add(login.Login, affectedLogin);
+                    affectedLogin = AssignAffectedLogin(before, after, maps, prevRecs, login);
+                }
+
+                if (affectedLogin is not null)
+                {
+                    affected.Add(login.Login, affectedLogin);
+
+                    affectedLogin.Previous = prevRecs.Select(x => x.MapUid).ToList();
+                }
+            }
+
+            foreach(var indifferentMap in affected.Values.SelectMany(x => x.Previous))
+            {
+                if (!maps.ContainsKey(indifferentMap))
+                {
+                    maps.Add(indifferentMap, new Map
+                    {
+                        CurLb = GetMapRecord(before, indifferentMap),
+                        PrevLb = GetMapRecord(after, indifferentMap)
+                    });
                 }
             }
 
@@ -255,7 +272,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
         {
             var mapUidList = new List<string>();
 
-            if (differentRecs.Count() <= 0)
+            if (!differentRecs.Any())
                 return null;
 
             foreach (var map in differentRecs)

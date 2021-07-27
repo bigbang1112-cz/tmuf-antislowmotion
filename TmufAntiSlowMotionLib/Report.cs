@@ -8,7 +8,13 @@ namespace BigBang1112.TmufAntiSlowMotionLib
 {
     public class Report
     {
+        /// <summary>
+        /// Key: map uid
+        /// </summary>
         public Dictionary<string, Map> Maps { get; set; }
+        /// <summary>
+        /// Key: login
+        /// </summary>
         public Dictionary<string, AffectedLogin> AffectedLogins { get; set; }
 
         public Dictionary<string, Map> GetChanges(string login)
@@ -37,6 +43,22 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             Maps.TryGetValue(mapUid, out Map map);
 
             return map;
+        }
+
+        public Dictionary<string, Map> GetRemaining(string login)
+        {
+            var dictionary = new Dictionary<string, Map>();
+
+            if (!AffectedLogins.TryGetValue(login, out AffectedLogin affected))
+                return dictionary;
+
+            foreach (var mapUid in affected.Previous.Except(affected.Changes))
+            {
+                Maps.TryGetValue(mapUid, out Map map);
+                dictionary.Add(mapUid, map);
+            }
+
+            return dictionary;
         }
     }
 }

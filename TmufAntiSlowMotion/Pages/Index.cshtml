@@ -25,6 +25,7 @@
     <li><a href="#records-removed">@(Model.RecordsRemoved.ToString("# ###"))+ records have been removed</a></li>
     <li><a href="#data-accuracy">Data accuracy in the next results</a></li>
     <li><a href="#logins-with-removed-records">Logins with removed records within Top 10 world</a></li>
+    <li><a href="#remaining-records">Remaining records of these logins within Top 10 world</a></li>
     <li><a href="#maps-with-most-removed-records">Maps with the most removed records within Top 10 world</a></li>
     <li><a href="#unaffected-maps-within">Unaffected maps within Top 10 world</a></li>
     <li><a href="#data-accuracy-reminder">Data accuracy reminder</a></li>
@@ -145,9 +146,13 @@
     for future investigations, but these haven't been counted for now.
 </p>
 
-<h2 id="logins-with-removed-records">Logins with removed records within Top 10 world <small><a href="#maps-with-most-removed-records">skip</a></small></h2>
+<h2 id="logins-with-removed-records">Logins with removed records within Top 10 world <small><a href="#remaining-records">skip</a></small></h2>
 
 <p>There are some expected and unexpected results. <b>You can click on the maps to get the leaderboards before and after.</b> <a asp-page="Index" asp-route-format="json">JSON</a></p>
+
+<h4><b>@Model.Report.AffectedLogins.Count logins</b> have been affected by the wave.</h4>
+<h5><b>@Model.Report.AffectedLogins.Where(x => x.Value.Changes.Count == x.Value.Previous.Count).Count() logins</b> have been completely removed.</h5>
+<br />
 
 <table class="table table-sm">
     <thead>
@@ -161,42 +166,100 @@
     <tbody>
         @foreach (var login in Model.Report.AffectedLogins.OrderByDescending(x => x.Value.Changes.Count))
         {
-        <tr class="tr-map-leaderboard" data-login="@login.Key">
-            <td title="@login.Key" class="align-middle" style="width: 16rem">
-                <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
+            <tr class="tr-map-leaderboard" data-login="@login.Key">
+                <td title="@login.Key" class="align-middle" style="width: 16rem">
+                    <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
 
+                    <h6>
+                        @login.Value.Changes.Count/@login.Value.Previous.Count
+                        (@((login.Value.Changes.Count / (float)login.Value.Previous.Count).ToString("P")))
+                        <small>removed records</small>
+                    </h6>
 
-                <span>@login.Value.Changes.Count+ removed @(login.Value.Changes.Count > 1 ? " records" : "record")</span>
-                
-                @if (Model.Voluntary.TryGetValue(login.Key, out VoluntaryModel voluntary))
-                {
-                <br />
-                <span title="@voluntary.CustomTooltip"><small><i><a href="@voluntary.Url">(@voluntary.CustomMessage)</a></i></small></span>
-                }
-            </td>
+                    @if (Model.Voluntary.TryGetValue(login.Key, out VoluntaryModel voluntary))
+                    {
+                        <span title="@voluntary.CustomTooltip"><small><i><a href="@voluntary.Url">(@voluntary.CustomMessage)</a></i></small></span>
+                    }
+                </td>
 
-            @{
+                @{
                     var changes = Model.Report.GetChanges(login.Key);
-            }
+                }
 
-            <td style="width: 12rem;">
-                <div style="height: 13rem;" class="overflow-auto">
-                    @if (changes.Count > 0)
+                <td style="width: 12rem;">
+                    <div style="height: 13rem;" class="overflow-auto">
+                        @if (changes.Count > 0)
                         {
-                    <ul class="list-unstyled">
-                        @foreach (var change in changes)
+                            <ul class="list-unstyled">
+                                @foreach (var change in changes)
                                 {
-                        <li><button type="button" class="button-map-leaderboard btn btn-link btn-sm" data-mapuid="@change.Key" title="@change.Key">@change.Value.MapName</button></li>
+                                    <li><button type="button" class="button-map-leaderboard btn btn-link btn-sm" data-mapuid="@change.Key" data-time="@change.Value.PrevLb.First(x => x.Login == login.Key).Time" title="@change.Key">@change.Value.MapName</button></li>
                                 }
-                    </ul>
+                            </ul>
                         }
-                </div>
-            </td>
-            <td style="max-width: 5rem;" class="td-map-leaderboard-before align-middle">
-            </td>
-            <td style="max-width: 5rem;" class="td-map-leaderboard-after align-middle">
-            </td>
+                    </div>
+                </td>
+                <td style="max-width: 5rem;" class="td-map-leaderboard-before align-middle">
+                </td>
+                <td style="max-width: 5rem;" class="td-map-leaderboard-after align-middle">
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2 id="remaining-records">Remaining records of these logins within Top 10 world <small><a href="#maps-with-most-removed-records">skip</a></small></h2>
+
+<p>Calculated by taking the affected records and substracting them from all records from before.</p>
+
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Remained on maps</th>
+            <th>Before</th>
+            <th>After</th>
         </tr>
+    </thead>
+    <tbody>
+        @foreach (var login in Model.Report.AffectedLogins
+            .OrderByDescending(x => x.Value.Changes.Count / (float)x.Value.Previous.Count)
+            .Where(x => x.Value.Previous.Count - x.Value.Changes.Count > 0))
+        {
+            var remainedCount = login.Value.Previous.Count - login.Value.Changes.Count;
+
+            <tr class="tr-map-leaderboard" data-login="@login.Key">
+                <td title="@login.Key" class="align-middle" style="width: 16rem">
+                    <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
+
+                    <h6>
+                        @remainedCount/@login.Value.Previous.Count (@((login.Value.Changes.Count / (float)login.Value.Previous.Count).ToString("P")))
+                    </h6>
+                    <small>remaining records on maps</small>
+                </td>
+
+                @{
+                    var remaining = Model.Report.GetRemaining(login.Key);
+                }
+
+                <td style="width: 12rem;">
+                    <div style="height: 13rem;" class="overflow-auto">
+                        @if (remaining.Count > 0)
+                        {
+                            <ul class="list-unstyled">
+                                @foreach (var map in remaining)
+                                {
+                                    <li><button type="button" class="button-map-leaderboard btn btn-link btn-sm" data-mapuid="@map.Key" title="@map.Key">@(map.Value?.MapName ?? map.Key)</button></li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </td>
+                <td style="min-width: 12rem;" class="td-map-leaderboard-before align-middle">
+                </td>
+                <td style="min-width: 12rem;" class="td-map-leaderboard-after align-middle">
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -218,31 +281,31 @@
     <tbody>
         @foreach (var map in Model.MostAffectedMaps.Where(x => x.Value.Count > 0).OrderByDescending(x => x.Value.Count))
         {
-        <tr class="tr-map" data-mapuid="@map.Key" data-logins="@string.Join(",,,", map.Value.Select(x => x.Login))">
-            <td class="align-middle" style="width: 1rem">
-                <h4>@Model.Report.Maps[map.Key].MapName</h4>
-                <span class="text-secondary" style="font-size:12px">@map.Key</span>
-            </td>
+            <tr class="tr-map" data-mapuid="@map.Key" data-logins="@string.Join(",,,", map.Value.Select(x => x.Login))">
+                <td class="align-middle" style="width: 1rem">
+                    <h4>@Model.Report.Maps[map.Key].MapName</h4>
+                    <span class="text-secondary" style="font-size:12px">@map.Key</span>
+                </td>
 
-            <td class="align-middle">
-                <h2>@map.Value.Count</h2>
-            </td>
+                <td class="align-middle">
+                    <h2>@map.Value.Count</h2>
+                </td>
 
-            <td>
-                <ul class="list-unstyled align-middle">
-                    @foreach (var login in map.Value)
+                <td>
+                    <ul class="list-unstyled align-middle">
+                        @foreach (var login in map.Value)
                         {
-                    <li title="@login.Login">@Formatter.Deformat(login.Nickname)</li>
+                            <li title="@login.Login">@Formatter.Deformat(login.Nickname)</li>
                         }
-                </ul>
-            </td>
-            <td style="min-width: 12rem;" class="td-map-leaderboard-before align-middle text-center">
-                <button type="button" class="button-map-leaderboard-before btn btn-link btn-sm">Load</button>
-            </td>
-            <td style="min-width: 12rem;" class="td-map-leaderboard-after align-middle text-center">
-                <button type="button" class="button-map-leaderboard-after btn btn-link btn-sm">Load</button>
-            </td>
-        </tr>
+                    </ul>
+                </td>
+                <td style="min-width: 12rem;" class="td-map-leaderboard-before align-middle text-center">
+                    <button type="button" class="button-map-leaderboard-before btn btn-link btn-sm">Load</button>
+                </td>
+                <td style="min-width: 12rem;" class="td-map-leaderboard-after align-middle text-center">
+                    <button type="button" class="button-map-leaderboard-after btn btn-link btn-sm">Load</button>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -259,7 +322,7 @@
 <ul>
     @foreach (var map in Model.UnaffectedMaps)
     {
-    <li>@map.Value.MapName <small class="text-secondary">@map.Key</small></li>
+        <li>@map.Value.MapName <small class="text-secondary">@map.Key</small></li>
     }
 </ul>
 
