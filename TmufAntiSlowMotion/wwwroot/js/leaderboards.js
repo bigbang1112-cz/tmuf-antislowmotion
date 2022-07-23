@@ -14,7 +14,7 @@ function setLeaderboard(sender, response, target, mapUid, selectedTime) {
 
         if ((closestMapLeaderboard != null && closestMapLeaderboard.getAttribute("data-login") == record.login)
          || (closestMap != null && closestMap.getAttribute("data-logins").split(",,,").includes(record.login)))
-            html += '<tr bgcolor="yellow"';
+            html += '<tr bgcolor="darkgoldenrod"';
         else
             html += '<tr';
 
@@ -24,7 +24,7 @@ function setLeaderboard(sender, response, target, mapUid, selectedTime) {
                 if (!lineApplied) {
                     if (selectedTime < record.timeRaw) {
                         lineApplied = true;
-                        html += ' style="border-top: 3px solid yellow"';
+                        html += ' style="border-top: 3px solid darkgoldenrod"';
                     }
                 }
             }
