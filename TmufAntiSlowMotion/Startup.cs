@@ -2,6 +2,7 @@ using BigBang1112.TmufAntiSlowMotion.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,13 @@ namespace BigBang1112.TmufAntiSlowMotion
             services.AddControllers();
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+            });
+
             services.AddHostedService<CachingService>();
         }
 
@@ -48,6 +56,8 @@ namespace BigBang1112.TmufAntiSlowMotion
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseResponseCompression();
 
             app.UseAuthorization();
 
