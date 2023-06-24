@@ -20,4 +20,4 @@ RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["./TmufAntiSlowMotion.dll"]
+ENTRYPOINT ["./TmufAntiSlowMotion"]
