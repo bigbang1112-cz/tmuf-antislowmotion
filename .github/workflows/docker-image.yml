@@ -6,7 +6,7 @@ on:
     
 env:
   BUILD_DIR: TmufAntiSlowMotion
-  IMAGE_NAME: antislowmo-bigbang1112-cz
+  IMAGE_NAME: antislowmo-bigbang1112-cz-dortmund
   REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
 
 jobs:
