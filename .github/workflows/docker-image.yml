@@ -3,6 +3,7 @@ name: Docker Image push to registry
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
     
 env:
   BUILD_DIR: TmufAntiSlowMotion
