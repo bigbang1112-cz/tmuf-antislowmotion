@@ -14,6 +14,9 @@ namespace BigBang1112.TmufAntiSlowMotionLib
 {
     public static class AntiSlowMotion
     {
+        private const string WorldZone = "World";
+        private const string CurrentZone = "World|Germany|North Rhine-Westphalia|Dortmund";
+
         public static Dictionary<string, CampaignScores> ParseLeaderboard(string filePath)
         {
             using var fs = File.OpenRead(filePath);
@@ -34,12 +37,12 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             Dictionary<string, CampaignScores> after)
         {
             var cLogins = after.SelectMany(x => x.Value.Maps)
-                .SelectMany(x => x.Value.Zones["World"].Records)
+                .SelectMany(x => x.Value.Zones[CurrentZone].Records)
                 .Select(x => x.Login)
                 .ToHashSet();
 
             var pLogins = before.SelectMany(x => x.Value.Maps)
-                .SelectMany(x => x.Value.Zones["World"].Records)
+                .SelectMany(x => x.Value.Zones[CurrentZone].Records)
                 .Select(x => x.Login)
                 .ToHashSet();
 
@@ -50,10 +53,10 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             Dictionary<string, CampaignScores> after)
         {
             var numberOfPrevRecords = before.SelectMany(x => x.Value.Maps)
-                .Select(x => x.Value.Zones["World"].TotalCount).Sum();
+                .Select(x => x.Value.Zones[CurrentZone].TotalCount).Sum();
 
             var numberOfCurrentRecords = after.SelectMany(x => x.Value.Maps)
-                .Select(x => x.Value.Zones["World"].TotalCount).Sum();
+                .Select(x => x.Value.Zones[CurrentZone].TotalCount).Sum();
 
             return numberOfCurrentRecords - numberOfPrevRecords;
         }
@@ -89,7 +92,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
         {
             return leaderboard.SelectMany(x => x.Value.Maps)
                 .SelectMany(loginMapPair =>
-                    loginMapPair.Value.Zones["World"].Records
+                    loginMapPair.Value.Zones[CurrentZone].Records
                         .Select(record => (loginMapPair.Value, record))
                     )
                     .Select(mapRecordPair => (
@@ -310,7 +313,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             return scores
                 .SelectMany(x => x.Value.Maps)
                 .FirstOrDefault(x => x.Value.MapUid == mapUid)
-                .Value.Zones["World"].Records.Select(rec => new Record
+                .Value.Zones[CurrentZone].Records.Select(rec => new Record
                 {
                     Login = rec.Login,
                     Nickname = rec.Nickname,

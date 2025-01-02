@@ -33,13 +33,13 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
             var before = cache.GetOrCreate(CacheKeys.LeaderboardBefore, entry =>
             {
                 logger.LogInformation("Parsing before.zip ...");
-                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/before.zip");
+                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/before_germany_north-rhine-westphalia_dortmund.zip");
             });
 
             var after = cache.GetOrCreate(CacheKeys.LeaderboardAfter, entry =>
             {
                 logger.LogInformation("Parsing after.zip ...");
-                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/after.zip");
+                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/after_germany_north-rhine-westphalia_dortmund.zip");
             });
 
             cache.GetOrCreate(CacheKeys.RecordCountDifference, entry =>
