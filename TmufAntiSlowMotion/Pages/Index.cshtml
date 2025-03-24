@@ -7,16 +7,16 @@
 <h1>March 24, 2025 - The Purge 2 in TMUF</h1>
 <p><small>Last updated: <time datetime="2025-03-25">March 25, 2025</time></small></p>
 <p>
-    A noticable change has been made again in the Trackmania United Forever leaderboards on March 24, 2025, which fully applied ingame on March 25.
+    A noticeable change was made again in the Trackmania United Forever leaderboards on March 24, 2025, which fully applied ingame on March 25.
     In response to the <a href="https://www.youtube.com/watch?v=ox6zF48YXkQ">Exposing Trackmania's Biggest Con-Man...</a> investigation initiated by Arkes,
     Nadeo has acknowledged the alt account problem in Trackmania United Forever, and removed all of the records driven on proved alt accounts,
-    most notably those belonging to riolu. The records were removed during March 24, but ingame, they have been publically updated
-    on the next day (with the exception of opponent skillpoints, which updated immediately, as it uses a different kind of request).
-    It was possible to extract the leaderboard data from 25rd and the day before using some simple reverse engineering techniques.
+    most notably those belonging to riolu. The records were removed on March 24, but ingame, they were publically updated
+    on the next day (with the exception of opponent skillpoints, which were updated immediately, as it uses a different kind of request).
+    It was possible to extract the leaderboard data from the 25th and the day before using some simple reverse engineering techniques.
 </p>
 <p>
-    In comparison from the Purge 1 from July 23, 2021, this one is focused entirely on alt accounts, and not any other cheating methods.
-    Many of these accounts had records removed that weren't ever proved to be cheated via an external software.
+    In comparison to Purge 1 from July 23, 2021, this one is focused entirely on alt accounts and not any other cheating methods.
+    Many of these accounts had records removed that weren't ever proved to be cheated via external software.
 </p>
 <p>
     This leaderboard change was announced by <a href="https://x.com/Hylis1/status/1904239315787677978">Hylis on X</a> on March 24, 19:30 CET.
@@ -54,7 +54,7 @@
 <p>
     I used <a href="https://www.telerik.com/download/fiddler">Fiddler 4</a> to look through the HTTP requests the game does to get the leaderboard data. The game
     communicates with the server by using the <a href="https://en.wikipedia.org/wiki/XML-RPC">XML-RPC protocol</a>. Basically, the client sends some conventional XML
-    to server and the server returns some conventional XML back. The request name for the leaderboard data is
+    to a server and the server returns some conventional XML back. The request name for the leaderboard data is
     <code>GetCampaignScores</code>. Once proper arguments are assigned, this will then return the URL of
     the downloadable leaderboard data. The format of the URL looks something like this <b>(must be http, not https)</b>:
 </p>
@@ -103,7 +103,7 @@
 </ul>
 
 <p>
-    These URL endpoints are updated every day throughout the night in a loop I mentioned above. They start updating at 3:39 GMT from Japan
+    These URL endpoints are updated every day throughout the night in the loop I mentioned above. They start updating at 3:39 GMT from Japan
     and stop updating at around 9:13 GMT in China.
 </p>
 
@@ -151,7 +151,7 @@
 <h2 id="data-accuracy">Data accuracy in the next results</h2>
 
 <p>
-    The following results were calculated by <b>only using the top 10 world leaderboards</b>. It is the best suitable leaderboard
+    The following results were calculated by <b>only using the top 10 world leaderboards</b>. It is the most suitable leaderboard
     zone for this report because it affects everyone who hunted the world records. I have extracted all of the zones of the account logins
     sent to me for future investigations, but these haven't been counted for now.
 </p>
@@ -220,7 +220,7 @@
 
 <h2 id="remaining-records">Remaining records of these logins within Top 10 world <small><a href="#maps-with-most-removed-records">skip</a></small></h2>
 
-<p>Calculated by taking the affected records and substracting them from all records from before.</p>
+<p>Calculated by taking the affected records and subtracting them from all records from before.</p>
 
 <table class="table table-sm">
     <thead>
@@ -340,7 +340,7 @@
 
 <p>
     The tables have been only measured from the Top 10 world leaderboards. All of these are only the minimal values
-    of the changes that have been done. I've also downloaded leaderboard data of all relevant zones
+    of the changes that have been made. I've also downloaded leaderboard data of all relevant zones
     from the two investigated days to be later analyzed.
 </p>
 
