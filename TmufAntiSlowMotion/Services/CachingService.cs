@@ -33,7 +33,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
             var before = cache.GetOrCreate(CacheKeys.LeaderboardBefore, entry =>
             {
                 logger.LogInformation("Parsing before.zip ...");
-                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/before.zip");
+                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/before_v2.zip");
             });
 
             var after = cache.GetOrCreate(CacheKeys.LeaderboardAfter, entry =>

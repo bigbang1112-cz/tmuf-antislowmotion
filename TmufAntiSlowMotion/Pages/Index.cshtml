@@ -1,16 +1,25 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "July 23, 2021 - The Anti-Slowmotion day for TMUF";
+    ViewData["Title"] = "March 24, 2025 - The Purge 2 in TMUF";
 }
 
-<h1>July 23, 2021 - The Anti-Slowmotion day for TMUF</h1>
-
+<h1>March 24, 2025 - The Purge 2 in TMUF</h1>
+<p><small>Last updated: <time datetime="2025-03-25">March 25</time></small></p>
 <p>
-    On 23 July, a major change could be seen in the Trackmania United Forever leaderboards.
-    Over 5 thousand records were removed after an anti-cheat wave by Nadeo. The records were removed
-    during 22 July, but they have been publically updated on the next day. It was possible to extract
-    the leaderboard data from 23rd and the day before using some simple reverse engineering techniques.
+    A noticable change has been made again in the Trackmania United Forever leaderboards on March 24, 2025, which fully applied ingame on March 25.
+    In response to the <a href="https://www.youtube.com/watch?v=ox6zF48YXkQ">Exposing Trackmania's Biggest Con-Man...</a> investigation initiated by Arkes,
+    Nadeo has acknowledged the alt account problem in Trackmania United Forever, and removed all of the records driven on proved alt accounts,
+    most notably those belonging to riolu. The records were removed during March 24, but ingame, they have been publically updated
+    on the next day (with the exception of opponent skillpoints, which updated immediately, as it uses a different kind of request).
+    It was possible to extract the leaderboard data from 25rd and the day before using some simple reverse engineering techniques.
+</p>
+<p>
+    In comparison from the Purge 1 from July 23, 2021, this one is focused entirely on alt accounts, and not any other cheating methods.
+    Many of these accounts had records removed that weren't ever proved to be cheated via an external software.
+</p>
+<p>
+    This leaderboard change was announced by <a href="https://x.com/Hylis1/status/1904239315787677978">Hylis on X</a> on March 24, 19:30 CET.
 </p>
 
 <ul>
@@ -35,8 +44,9 @@
 <h2 id="disclaimer">Disclaimer</h2>
 
 <p>
-    The point of this report is to share changes that have happened to the leaderboards, not to call out people as cheaters.
-    I'm not the one to judge that someone is cheating. Please, do not witchhunt the nicknames mentioned.
+    The point of this report is to share changes that have happened to the leaderboards.
+    There are no claims on cheating via external software, this purge is focused on the alt account problem.
+    Please, do not witchhunt the nicknames mentioned.
 </p>
 
 <h2 id="transparency">Transparency</h2>
@@ -93,29 +103,29 @@
 </ul>
 
 <p>
-    These URL endpoints are updated every day throughout the night in a loop I mentioned above. They start updating at 2:40 UTC from Japan
-    and stop updating at around 8:13 UTC in China.
+    These URL endpoints are updated every day throughout the night in a loop I mentioned above. They start updating at 3:39 GMT from Japan
+    and stop updating at around 9:13 GMT in China.
 </p>
 
 <p>
     The content of the leaderboards file is compressed with <a href="https://en.wikipedia.org/wiki/Gzip">gzip</a> and contains
-    binary data that can be read <a href="https://github.com/BigBang1112/tm-xml-rpc/blob/main/TmXmlRpc/CampaignScores.cs">like this</a>.
+    binary data that can be read <a href="https://github.com/BigBang1112/maniaapi-net/blob/783a78c00ca7c7077573166354493829d7f18408/Src/ManiaAPI.XmlRpc/TMUF/CampaignScores.cs#L18">like this</a>.
     It contains all map UIDs of the campaign. For each map: Up to 4 or 5 leaderboards based on the zone ID, always including the World leaderboard.
     For each zone leaderboard: Top 10 records with rank, time, login, and nickname. Then, a list of all times driven on the track <b>without login or nickname</b>
     used to calculate the number of skillpoints. The total amount of records for each map can be calculated with this data.
-    <b>
-        Replay URLs aren't available in these leaderboards. They are protected by authentication and cost 5 coppers each.
-        <i>And my United account doesn't have that many coppers to just download everything.</i> Take that also into consideration
-        of the results below - no replay files were investigated.
-    </b> I also tried to extract the replay URL format, but the URL is unpredictable
-    and, just random (X are purely random numbers):
+    <b>Replay URLs aren't available in these leaderboards.</b> By default, they are protected by authentication, but it's possible to get around it.
+    However, it's worth noting that <b>replay downloads become unavailable the moment Nadeo removes them.</b>
+    This is problematic when trying to post-analyze these records. But there's a high chance most of these records have been archived before.
+</p>
+<p>
+    The replay URL looks like this (for curiosity):
 </p>
 <p><code>http://data.trackmaniaforever.com/official_replays/records/X-XXXXX/X/XXXXXXX.replay.gbx</code></p>
 <p>
-    For the report, I used <a href="~/leaderboards/before.zip">before.zip</a> (from July 22) and <a href="~/leaderboards/after.zip">after.zip</a>
-    (from July 23), containing all of the official campaign GZ files, available in <code>scores5</code> from July 22-27 and in <code>scores6</code> from July 23-28.
-    The 'before' leaderboards contain data from China, 浙江 ~8:13 UTC and the 'after' leaderboards contain data from Japan ~2:40 UTC
-    to have the smallest possible gap and increase the accuracy (practically it isn't anything different, see <a href="~/leaderboards/before_japan.zip">before_japan.zip</a>).
+    For the report, I used <a href="~/leaderboards/before_v2.zip">before_v2.zip</a> (from March 24) and <a href="~/leaderboards/after_v2.zip">after_v2.zip</a>
+    (from March 25), containing all of the official campaign GZ files, available in <code>scores3</code> from March 24-29 and in <code>scores4</code> from March 25-30.
+    The 'before_v2' leaderboards contain data from Japan ~2:39 GMT (March 24) and the 'after_v2' leaderboards contain data from Japan ~2:39 GMT (March 25).
+    There's a smaller time gap possible by using the China dataset, but practically it isn't anything different, proved in <a href="https://antislowmo.bigbang1112.cz/">previous report</a>).
     To assign map names to the map UIDs, a <a href="~/maps.json">maps.json</a> was pre-generated.
 </p>
 <p>
@@ -125,30 +135,30 @@
 <h5 id="libraries-used">Libraries used</h5>
 
 <ul>
-    <li><a href="https://github.com/BigBang1112/tm-xml-rpc">TmXmlRpc</a></li>
+    <li><a href="https://github.com/BigBang1112/maniaapi-net">ManiaAPI.NET (XmlRpc)</a></li>
     <li><a href="https://github.com/BigBang1112/gbx-net">GBX.NET</a></li>
 </ul>
 
-<h5 id="full-source-code"><a href="https://github.com/bigbang1112-cz/tmuf-antislowmotion">Full source code is available here.</a></h5>
+<h5 id="full-source-code"><a href="https://github.com/bigbang1112-cz/tmuf-antislowmotion/tree/purge-v2">Full source code is available here.</a></h5>
 <br />
 <h2 id="records-removed"><b>@(Model.RecordsRemoved.ToString("# ###"))+ records</b> have been removed</h2>
 
 <p>
-    And on 100% it's way more. The amount of records is possibly over 6 thousand, because of the players driving official times at that day.
-    But this is the statistical result of calculating the total record count of all campaigns on July 23, subtracted from the result of July 22.
+    And it might be just a bit more, because of the players driving official times at that day. But it's difficult to get the exact number.
+    This result was calculated by using the total record count of all campaigns on March 25, subtracted from the result of March 23.
 </p>
 
 <h2 id="data-accuracy">Data accuracy in the next results</h2>
 
 <p>
     The following results were calculated by <b>only using the top 10 world leaderboards</b>. It is the best suitable leaderboard
-    zone for this report because it affects everyone who hunted the world records. I have extracted all of the other zones
-    for future investigations, but these haven't been counted for now.
+    zone for this report because it affects everyone who hunted the world records. I have extracted all of the zones of the account logins
+    sent to me for future investigations, but these haven't been counted for now.
 </p>
 
 <h2 id="logins-with-removed-records">Logins with removed records within Top 10 world <small><a href="#remaining-records">skip</a></small></h2>
 
-<p>There are some expected and unexpected results. <b>You can click on the maps to get the leaderboards before and after.</b> <a asp-page="Index" asp-route-format="json">JSON</a></p>
+<p>The results. <b>You can click on the maps to get the leaderboards before and after.</b> <a asp-page="Index" asp-route-format="json">JSON</a></p>
 
 <h4><b>@Model.Report.AffectedLogins.Count logins</b> have been affected by the wave.</h4>
 <h5><b>@Model.Report.AffectedLogins.Where(x => x.Value.Changes.Count == x.Value.Previous.Count).Count() logins</b> have been completely removed.</h5>
@@ -330,22 +340,20 @@
 
 <p>
     The tables have been only measured from the Top 10 world leaderboards. All of these are only the minimal values
-    of the changes that have been done. I've also downloaded 1.6GB of leaderboard data of all available zones
+    of the changes that have been done. I've also downloaded leaderboard data of all relevant zones
     from the two investigated days to be later analyzed.
 </p>
 
 <h2 id="conclusion">Conclusion</h2>
 
 <p>
-    Nadeo developers and the master server itself know way more than we do. These statistics came from the data that
-    clients (we) receive. If Nadeo will say any details regarding the leaderboard cleanup may or may not be seen, but
-    as Hylis said on his Twitter:
+    With this action, Nadeo confirmed that they have no interest in keeping records driven on alt accounts,
+    and that it's not a good idea to abuse your skill to pollute the leaderboards.
 </p>
-
-<blockquote class="blockquote">
-    ...we will avoid to disclose more information as it is best for anticheat development.
-    <footer class="blockquote-footer"><a href="https://twitter.com/Hylis1/status/1414941040331698176?s=20">Hylis</a></footer>
-</blockquote>
+<p>
+    I personally hope that similar actions will be taken for Trackmania 2: <a href="https://x.com/Loupphok/status/1904243655470391582">Stadium</a> and Lagoon in the near future.
+    We need to treat official Trackmania leaderboards equally for healthy competition. So far, things are looking bright though.
+</p>
 
 <h5>Thanks for reading.</h5>
 
