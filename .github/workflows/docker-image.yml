@@ -7,7 +7,7 @@ on:
     
 env:
   BUILD_DIR: TmufAntiSlowMotion
-  IMAGE_NAME: antislowmo-bigbang1112-cz
+  IMAGE_NAME: purge2-bigbang1112-cz
   REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
 
 jobs:
