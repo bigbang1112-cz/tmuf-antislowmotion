@@ -12,6 +12,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
         public string MapName { get; set; }
         public IEnumerable<Record> PrevLb { get; set; }
         public IEnumerable<Record> CurLb { get; set; }
+        public bool IsStunt { get; set; }
 
         public override string ToString()
         {

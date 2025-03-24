@@ -229,6 +229,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
                 if (mapInfos.TryGetValue(map.Key, out MapInfo mapInfo))
                 {
                     maps[map.Key].MapName = mapInfo.Name;
+                    maps[map.Key].IsStunt = mapInfo.IsStunt;
                 }
             }
         }

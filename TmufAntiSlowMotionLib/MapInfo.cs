@@ -9,5 +9,6 @@ namespace BigBang1112.TmufAntiSlowMotionLib
     public class MapInfo
     {
         public string Name { get; set; }
+        public bool IsStunt { get; set; }
     }
 }

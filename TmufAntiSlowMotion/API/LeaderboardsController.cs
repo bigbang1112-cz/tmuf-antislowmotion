@@ -36,7 +36,7 @@ namespace BigBang1112.TmufAntiSlowMotion.API
              && !report.UnaffectedMaps.TryGetValue(mapUid, out map))
                 return NotFound();
 
-            return Ok(map.PrevLb.Select(x => AdjustedRecord(x)));
+            return Ok(map.PrevLb.Select(x => AdjustedRecord(x, map.IsStunt)));
         }
 
         [HttpGet("map/after/{mapUid}")]
@@ -48,15 +48,15 @@ namespace BigBang1112.TmufAntiSlowMotion.API
              && !report.UnaffectedMaps.TryGetValue(mapUid, out map))
                 return NotFound();
 
-            return Ok(map.CurLb.Select(x => AdjustedRecord(x)));
+            return Ok(map.CurLb.Select(x => AdjustedRecord(x, map.IsStunt)));
         }
 
-        private static RecordModel AdjustedRecord(Record record)
+        private static RecordModel AdjustedRecord(Record record, bool isStunt)
         {
             return new RecordModel
             {
                 Rank = record.Rank,
-                Time = new TimeInt32(record.Time).ToString(true),
+                Time = isStunt ? $"{record.Time} pts." : new TimeInt32(record.Time).ToString(true),
                 TimeRaw = record.Time,
                 Login = record.Login,
                 Nickname = TextFormatter.Deformat(record.Nickname)
