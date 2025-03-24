@@ -1,5 +1,5 @@
-# July 23, 2021 - The Anti-Slowmotion day for TMUF
+# March 24, 2025 - The Purge 2 in TMUF
 
-This is the official repository for the Anti-Slowmotion day website.
+This is the official repository for the Anti-Slowmotion + Purge 2 day website.
 
-https://antislowmo.bigbang1112.cz
+https://purge2.bigbang1112.cz

@@ -1,17 +1,16 @@
-﻿using GBX.NET;
-using GBX.NET.Engines.Game;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TmXmlRpc;
+using ManiaAPI.XmlRpc.TMUF;
 
 namespace BigBang1112.TmufAntiSlowMotionLib
 {
+    // This is TERRIBLENESS from 2021 migrated from TmXmlRpc to ManiaAPI.XmlRpc
+    // Don't take this as a prime example of how to use ManiaAPI.XmlRpc PLEASE KEKW
+
     public static class AntiSlowMotion
     {
         public static Dictionary<string, CampaignScores> ParseLeaderboard(string filePath)
@@ -34,12 +33,12 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             Dictionary<string, CampaignScores> after)
         {
             var cLogins = after.SelectMany(x => x.Value.Maps)
-                .SelectMany(x => x.Value.Zones["World"].Records)
+                .SelectMany(x => x.Value.ChallengeScores["World"].HighScores)
                 .Select(x => x.Login)
                 .ToHashSet();
 
             var pLogins = before.SelectMany(x => x.Value.Maps)
-                .SelectMany(x => x.Value.Zones["World"].Records)
+                .SelectMany(x => x.Value.ChallengeScores["World"].HighScores)
                 .Select(x => x.Login)
                 .ToHashSet();
 
@@ -50,17 +49,17 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             Dictionary<string, CampaignScores> after)
         {
             var numberOfPrevRecords = before.SelectMany(x => x.Value.Maps)
-                .Select(x => x.Value.Zones["World"].TotalCount).Sum();
+                .Select(x => x.Value.ChallengeScores["World"].Skillpoints.Sum(x => x.Count)).Sum();
 
             var numberOfCurrentRecords = after.SelectMany(x => x.Value.Maps)
-                .Select(x => x.Value.Zones["World"].TotalCount).Sum();
+                .Select(x => x.Value.ChallengeScores["World"].Skillpoints.Sum(x => x.Count)).Sum();
 
             return numberOfCurrentRecords - numberOfPrevRecords;
         }
 
         public static Dictionary<LoginInfo, int> GetRecordCountDifferenceByLogin(
-            Dictionary<LoginInfo, IEnumerable<CampaignScoresMap>> ownersBefore,
-            Dictionary<LoginInfo, IEnumerable<CampaignScoresMap>> ownersAfter)
+            Dictionary<LoginInfo, IEnumerable<Leaderboard>> ownersBefore,
+            Dictionary<LoginInfo, IEnumerable<Leaderboard>> ownersAfter)
         {
             var changedRecords = new Dictionary<LoginInfo, int>();
 
@@ -68,7 +67,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             {
                 var pR = prevRec.Value.Count();
 
-                if (ownersAfter.TryGetValue(prevRec.Key, out IEnumerable<CampaignScoresMap> curRecs))
+                if (ownersAfter.TryGetValue(prevRec.Key, out IEnumerable<Leaderboard> curRecs))
                 {
                     var cR = curRecs.Count();
 
@@ -85,26 +84,26 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             return changedRecords;
         }
 
-        public static Dictionary<LoginInfo, IEnumerable<CampaignScoresMap>> GetRecordOwners(Dictionary<string, CampaignScores> leaderboard)
+        public static Dictionary<LoginInfo, IEnumerable<(string, CampaignScoresLeaderboard)>> GetRecordOwners(Dictionary<string, CampaignScores> leaderboard)
         {
             return leaderboard.SelectMany(x => x.Value.Maps)
                 .SelectMany(loginMapPair =>
-                    loginMapPair.Value.Zones["World"].Records
-                        .Select(record => (loginMapPair.Value, record))
+                    loginMapPair.Value.ChallengeScores["World"].HighScores
+                        .Select(record => (loginMapPair, record))
                     )
                     .Select(mapRecordPair => (
                         new LoginInfo(mapRecordPair.record.Login, mapRecordPair.record.Nickname),
-                        mapRecordPair.Value)
+                        (mapRecordPair.loginMapPair.Key, mapRecordPair.loginMapPair.Value))
                         )
                     .GroupBy(mapRecordPair => mapRecordPair.Item1)
-                    .ToDictionary(x => x.Key, x => x.Select(x => x.Value));
+                    .ToDictionary(x => x.Key, x => x.Select(x => x.Item2));
         }
 
         public static Report GetReport(
             Dictionary<string, CampaignScores> before,
             Dictionary<string, CampaignScores> after,
-            Dictionary<LoginInfo, IEnumerable<CampaignScoresMap>> ownersBefore,
-            Dictionary<LoginInfo, IEnumerable<CampaignScoresMap>> ownersAfter,
+            Dictionary<LoginInfo, IEnumerable<(string, CampaignScoresLeaderboard)>> ownersBefore,
+            Dictionary<LoginInfo, IEnumerable<(string, CampaignScoresLeaderboard)>> ownersAfter,
             string mapsJsonFile)
         {
             var maps = new Dictionary<string, Map>();
@@ -118,11 +117,11 @@ namespace BigBang1112.TmufAntiSlowMotionLib
 
                 AffectedLogin affectedLogin;
 
-                if (ownersAfter.TryGetValue(login, out IEnumerable<CampaignScoresMap> curRecs))
+                if (ownersAfter.TryGetValue(login, out IEnumerable<(string, CampaignScoresLeaderboard)> curRecs))
                 {
                     var curRecsCount = curRecs.Count();
 
-                    var differentRecs = prevRecs.Except(curRecs);
+                    var differentRecs = prevRecs.ExceptBy(curRecs.Select(x => x.Item1), x => x.Item1);
 
                     affectedLogin = AssignAffectedLogin(before, after, maps, differentRecs, login);
                 }
@@ -135,7 +134,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
                 {
                     affected.Add(login.Login, affectedLogin);
 
-                    affectedLogin.Previous = prevRecs.Select(x => x.MapUid).ToList();
+                    affectedLogin.Previous = prevRecs.Select(x => x.Item1).ToList();
                 }
             }
 
@@ -209,32 +208,16 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             return unaffectedMaps;
         }
 
-        public static IEnumerable<KeyValuePair<string, CampaignScoresMap>> GetAllOfficialMaps(
+        public static IEnumerable<KeyValuePair<string, CampaignScoresLeaderboard>> GetAllOfficialMaps(
             Dictionary<string, CampaignScores> any)
         {
             return any.SelectMany(x => x.Value.Maps);
         }
 
-        public static IEnumerable<KeyValuePair<string, CampaignScoresMap>> GetAllOfficialMapsAsDictionary(
+        public static IEnumerable<KeyValuePair<string, CampaignScoresLeaderboard>> GetAllOfficialMapsAsDictionary(
             Dictionary<string, CampaignScores> any)
         {
             return GetAllOfficialMaps(any).ToDictionary(x => x.Key, x => x.Value);
-        }
-
-        public static void ScanMapDetailsWithGbxFolder(Dictionary<string, Map> maps, string folderPath)
-        {
-            foreach (var file in Directory.GetFiles(folderPath, "*.gbx", SearchOption.AllDirectories))
-            {
-                var node = GameBox.ParseNodeHeader(file);
-
-                if (node is CGameCtnChallenge challenge)
-                {
-                    if (maps.TryGetValue(challenge.MapUid, out Map map))
-                    {
-                        map.MapName = TmEssentials.Formatter.Deformat(challenge.MapName);
-                    }
-                }
-            }
         }
 
         public static void ScanMapDetailsWithJsonFile(Dictionary<string, Map> maps, string filePath)
@@ -250,47 +233,27 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             }
         }
 
-        public static Dictionary<string, MapInfo> CreateDetailedMaps(string folderPath)
-        {
-            var maps = new Dictionary<string, MapInfo>();
-
-            foreach (var file in Directory.GetFiles(folderPath, "*.gbx", SearchOption.AllDirectories))
-            {
-                var node = GameBox.ParseNodeHeader(file);
-
-                if (node is CGameCtnChallenge challenge)
-                {
-                    maps.Add(challenge.MapUid, new MapInfo
-                    {
-                        Name = challenge.MapName
-                    });
-                }
-            }
-
-            return maps;
-        }
-
         private static AffectedLogin AssignAffectedLogin(Dictionary<string, CampaignScores> before,
             Dictionary<string, CampaignScores> after, Dictionary<string, Map> maps,
-            IEnumerable<CampaignScoresMap> differentRecs, LoginInfo login)
+            IEnumerable<(string, CampaignScoresLeaderboard)> differentRecs, LoginInfo login)
         {
             var mapUidList = new List<string>();
 
             if (!differentRecs.Any())
                 return null;
 
-            foreach (var map in differentRecs)
+            foreach (var (mapUid, _) in differentRecs)
             {
-                if (!maps.ContainsKey(map.MapUid))
+                if (!maps.ContainsKey(mapUid))
                 {
-                    maps.Add(map.MapUid, new Map
+                    maps.Add(mapUid, new Map
                     {
-                        CurLb = GetMapRecord(after, map),
-                        PrevLb = GetMapRecord(before, map)
+                        CurLb = GetMapRecord(after, mapUid),
+                        PrevLb = GetMapRecord(before, mapUid)
                     });
                 }
 
-                mapUidList.Add(map.MapUid);
+                mapUidList.Add(mapUid);
             }
 
             return new AffectedLogin
@@ -300,22 +263,17 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             };
         }
 
-        private static IEnumerable<Record> GetMapRecord(Dictionary<string, CampaignScores> scores, CampaignScoresMap map)
-        {
-            return GetMapRecord(scores, map.MapUid);
-        }
-
         private static IEnumerable<Record> GetMapRecord(Dictionary<string, CampaignScores> scores, string mapUid)
         {
             return scores
                 .SelectMany(x => x.Value.Maps)
-                .FirstOrDefault(x => x.Value.MapUid == mapUid)
-                .Value.Zones["World"].Records.Select(rec => new Record
+                .FirstOrDefault(x => x.Key == mapUid)
+                .Value.ChallengeScores["World"].HighScores.Select(rec => new Record
                 {
                     Login = rec.Login,
                     Nickname = rec.Nickname,
                     Rank = rec.Rank,
-                    Time = TmEssentials.TimeSpanExtensions.ToMilliseconds(rec.Time.GetValueOrDefault())
+                    Time = TmEssentials.TimeSpanExtensions.ToMilliseconds(rec.Time)
                 });
         }
     }

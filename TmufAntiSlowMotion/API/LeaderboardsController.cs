@@ -56,10 +56,10 @@ namespace BigBang1112.TmufAntiSlowMotion.API
             return new RecordModel
             {
                 Rank = record.Rank,
-                Time = TimeSpan.FromMilliseconds(record.Time).ToStringTm(true),
+                Time = new TimeInt32(record.Time).ToString(true),
                 TimeRaw = record.Time,
                 Login = record.Login,
-                Nickname = Formatter.Deformat(record.Nickname)
+                Nickname = TextFormatter.Deformat(record.Nickname)
             };
         }
     }

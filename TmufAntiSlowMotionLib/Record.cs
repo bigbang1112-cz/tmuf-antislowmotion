@@ -18,8 +18,8 @@ namespace BigBang1112.TmufAntiSlowMotionLib
         {
             var time = TimeSpan.FromMilliseconds(Time);
             if (Nickname == null)
-                return time.ToStringTm();
-            return $"{time.ToStringTm()} by {Formatter.Deformat(Nickname)}";
+                return time.ToString();
+            return $"{time.ToString()} by {TextFormatter.Deformat(Nickname)}";
         }
     }
 }

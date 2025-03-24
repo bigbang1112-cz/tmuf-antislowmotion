@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using BigBang1112.TmufAntiSlowMotion.Data;
 using BigBang1112.TmufAntiSlowMotionLib;
+using ManiaAPI.XmlRpc.TMUF;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using TmEssentials;
-using TmXmlRpc;
 
 namespace BigBang1112.TmufAntiSlowMotion.Pages
 {

@@ -30,13 +30,13 @@
     foreach (var map in campaign.Value.Maps)
     {
         counter++;
-        var mapZone = map.Value.Zones["World"];
-        var records = mapZone.Records;
+        var mapZone = map.Value.ChallengeScores["World"];
+        var records = mapZone.HighScores;
 
         <table class="table">
             <thead class="thead-dark pb-0">
                 <tr data-toggle="collapse" data-target="#leaderboard-@(counter)" class="accordion-toggle" style="cursor: pointer">
-                    <th colspan="3">@Model.MapInfos[map.Key].Name (@mapZone.TotalCount records)</th>
+                    <th colspan="3">@Model.MapInfos[map.Key].Name (@mapZone.Skillpoints.Sum(x => x.Count) records)</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,7 +61,7 @@
                                             <td>
                                                 @if (campaign.Key == "UnitedPlatform.gz" || campaign.Key == "UnitedStunts.gz")
                                                 {
-                                                    var score = record.Time.GetValueOrDefault().TotalMilliseconds;
+                                                    var score = record.Time.TotalMilliseconds;
                                                     if (score < 0)
                                                     {
                                                         <span>-</span>
@@ -73,25 +73,18 @@
                                                 }
                                                 else
                                                 {
-                                                    if (record.Time.HasValue)
+                                                    if (record.Time < TimeInt32.Zero)
                                                     {
-                                                        if (record.Time.Value < TimeSpan.Zero)
-                                                        {
-                                                            <span>-:--.--</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            @record.Time.Value.ToStringTm(true)
-                                                        }
+                                                        <span>-:--.--</span>
                                                     }
                                                     else
                                                     {
-                                                        @record.Time.ToStringTm(true)
+                                                        @record.Time.ToString(true)
                                                     }
                                                 }
                                             </td>
                                             <td title="@record.Login">
-                                                @Formatter.Deformat(record.Nickname)
+                                                @TextFormatter.Deformat(record.Nickname)
                                             </td>
                                         </tr>
                                     }

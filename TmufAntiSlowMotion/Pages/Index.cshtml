@@ -178,7 +178,7 @@
         {
             <tr class="tr-map-leaderboard" data-login="@login.Key">
                 <td title="@login.Key" class="align-middle" style="width: 16rem">
-                    <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
+                    <h5>@TextFormatter.Deformat(login.Value.Nickname)</h5>
 
                     <h6>
                         @login.Value.Changes.Count/@login.Value.Previous.Count
@@ -240,7 +240,7 @@
 
             <tr class="tr-map-leaderboard" data-login="@login.Key">
                 <td title="@login.Key" class="align-middle" style="width: 16rem">
-                    <h5>@Formatter.Deformat(login.Value.Nickname)</h5>
+                    <h5>@TextFormatter.Deformat(login.Value.Nickname)</h5>
 
                     <h6>
                         @remainedCount/@login.Value.Previous.Count (@((remainedCount / (float)login.Value.Previous.Count).ToString("P")))
@@ -305,7 +305,7 @@
                     <ul class="list-unstyled align-middle">
                         @foreach (var login in map.Value)
                         {
-                            <li title="@login.Login">@Formatter.Deformat(login.Nickname)</li>
+                            <li title="@login.Login">@TextFormatter.Deformat(login.Nickname)</li>
                         }
                     </ul>
                 </td>

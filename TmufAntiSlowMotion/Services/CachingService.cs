@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TmXmlRpc;
 
 namespace BigBang1112.TmufAntiSlowMotion.Services
 {
@@ -32,13 +31,13 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
         {
             var before = cache.GetOrCreate(CacheKeys.LeaderboardBefore, entry =>
             {
-                logger.LogInformation("Parsing before.zip ...");
+                logger.LogInformation("Parsing before_v2.zip ...");
                 return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/before_v2.zip");
             });
 
             var after = cache.GetOrCreate(CacheKeys.LeaderboardAfter, entry =>
             {
-                logger.LogInformation("Parsing after.zip ...");
+                logger.LogInformation("Parsing after_v2.zip ...");
                 return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/after.zip");
             });
 
