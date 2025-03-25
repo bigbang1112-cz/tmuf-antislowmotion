@@ -38,7 +38,7 @@ namespace BigBang1112.TmufAntiSlowMotion.Services
             var after = cache.GetOrCreate(CacheKeys.LeaderboardAfter, entry =>
             {
                 logger.LogInformation("Parsing after_v2.zip ...");
-                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/after.zip");
+                return AntiSlowMotion.ParseLeaderboard("wwwroot/leaderboards/after_v2.zip");
             });
 
             cache.GetOrCreate(CacheKeys.RecordCountDifference, entry =>

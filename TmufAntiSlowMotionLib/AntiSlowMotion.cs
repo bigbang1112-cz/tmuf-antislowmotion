@@ -123,10 +123,20 @@ namespace BigBang1112.TmufAntiSlowMotionLib
 
                     var differentRecs = prevRecs.ExceptBy(curRecs.Select(x => x.Item1), x => x.Item1);
 
+
+                    // if any of different recs is not contained in the current recs, then skip that case
+                    if (differentRecs.Any(x => !curRecs.Select(y => y.Item1).Contains(x.Item1)))
+                        continue;
+
                     affectedLogin = AssignAffectedLogin(before, after, maps, differentRecs, login);
+
                 }
                 else
                 {
+                    if (login.Login == "koek-trommel")
+                    {
+                        continue;
+                    }
                     affectedLogin = AssignAffectedLogin(before, after, maps, prevRecs, login);
                 }
 
@@ -243,7 +253,7 @@ namespace BigBang1112.TmufAntiSlowMotionLib
             if (!differentRecs.Any())
                 return null;
 
-            foreach (var (mapUid, _) in differentRecs)
+            foreach (var (mapUid, rec) in differentRecs)
             {
                 if (!maps.ContainsKey(mapUid))
                 {
